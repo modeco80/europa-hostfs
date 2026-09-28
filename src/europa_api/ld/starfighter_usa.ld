@@ -38,3 +38,56 @@ sceCdStRead = 0x002cd9a0;
 main = 0x003a8b50;
 mainTrampoline = 0x0003a8b58;
 
+
+/* IOP module strings */
+
+IOPString_IOPRP = 0x004cf3b0;
+
+IOPString_prefix = 0x004cf398;
+IOPString_suffix = 0x004cf3a8;
+
+IOPString_SIO2MAN = 0x004cf3d0;
+IOPString_PADMAN = 0x004cf3e0;
+IOPString_LIBSD = 0x004cf3f0;
+IOPString_SDRDRV = 0x004cf400;
+IOPString_LECAUDIO = 0x004cf410;
+IOPString_USBD = 0x004cf428;
+IOPString_USBKEYBD = 0x004cf440;
+IOPString_MCMAN = 0x004cf458;
+IOPString_MCSERV = 0x004cf468;
+
+/* Disk CStorage impl garbage. */
+
+CPS2CDStore_ct = 0x302990;
+CPS2CDStore_dt = 0x302b20;
+CPS2CDStore_Open = 0x302c20;
+CPS2CDStore_Close = 0x302d20;
+CPS2CDStore_SeekToBeginning = 0x302d50;
+CPS2CDStore_Seek = 0x302da0;
+CPS2CDStore_SeekToEnd = 0x302e00;
+CPS2CDStore_Read = 0x302e60;
+CPS2CDStore_ReadString = 0x302ed0;
+CPS2CDStore_ReadLine = 0x302f50;
+CPS2CDStore_Write = 0x302ff0;
+CPS2CDStore_Resize = 0x303000;
+CPS2CDStore_GetSize = 0x303010;
+CPS2CDStore_GetCurrPos = 0x303060;
+CPS2CDStore_IsOpen = 0x3030b0;
+
+/* CPS2DiskStore methods */
+CPS2DiskStore_ct = 0x13c520;
+CPS2DiskStore_dt = 0x13c6b0;
+CPS2DiskStore_Open = 0x13c7b0;
+CPS2DiskStore_Close = 0x13ca80;
+CPS2DiskStore_SeekToBeginning = 0x13cad0;
+CPS2DiskStore_Seek = 0x13cb00;
+CPS2DiskStore_SeekToEnd = 0x13cb30;
+CPS2DiskStore_Read = 0x13cb60;
+CPS2DiskStore_ReadString = 0x13cbc0;
+CPS2DiskStore_ReadLine = 0x13cc60;
+CPS2DiskStore_Write = 0x13cd20;
+CPS2DiskStore_Resize = 0x13cd30;
+CPS2DiskStore_GetSize = 0x13cd40;
+CPS2DiskStore_GetCurrPos = 0x13cd70;
+CPS2DiskStore_IsOpen = 0x13cda0;
+

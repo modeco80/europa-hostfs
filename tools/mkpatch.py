@@ -98,6 +98,23 @@ def patchInjectCore(original: bytes, patchCore: bytes, patchVirtualLoad: int) ->
 	result.extend(patchCore)
 	return bytes(result)
 
+THUNK_DISKSTORE_METHODS = [
+	'ct', 'dt',
+	'Open',
+	'Close',
+	'SeekToBeginning',
+	'Seek',
+	'SeekToEnd',
+	'Read',
+	'ReadString',
+	'ReadLine',
+	'Write',
+	'Resize',
+	'GetSize',
+	'GetCurrPos',
+	'IsOpen'
+]
+
 # The fun begins...
 def main():
 	REGION = sys.argv[1]
@@ -141,10 +158,33 @@ def main():
 		rollingLief.patch_address(addr, [0])
 		print(f'Erased string at 0x{addr:08x}')
 
+	def patchMakeStaticThunk(patch: int, thunkto: int):
+		THUNK = Mips.j(thunkto) + Mips.nop()
+		rollingLief.patch_address(patch, list(THUNK))
+		print(f'Static thunk of 0x{patch:08x} to 0x{thunkto:08x} applied.')
+
 	# Patch the program break to be ahead of the core, so that memory allocations do not break us.
 	# Once done, patch the start of main() to jump to the core entry point.
 	rollingLief.patch_address(ldScript.symbol('__HOOK_sbrk_break'), adjustedEnd)
 	rollingLief.patch_address(ldScript.symbol('main'), list(MAIN_STATIC_TRAMPOLINE))
+
+	patchString(ldScript.symbol('IOPString_prefix'), 'host0:')
+	patchEraseString(ldScript.symbol('IOPString_suffix'))
+	patchString(ldScript.symbol('IOPString_IOPRP'), 'host0:sys/ioprp.img')
+	patchString(ldScript.symbol('IOPString_SIO2MAN'), 'sys/sio2man.irx')
+	patchString(ldScript.symbol('IOPString_PADMAN'), 'sys/padman.irx')
+	patchString(ldScript.symbol('IOPString_LIBSD'), 'sys/libsd.irx')
+	patchString(ldScript.symbol('IOPString_SDRDRV'), 'sys/sdrdrv.irx')
+	patchString(ldScript.symbol('IOPString_LECAUDIO'), 'sys/lecaudio.irx')
+	patchString(ldScript.symbol('IOPString_USBD'), 'sys/usbd.irx')
+	patchString(ldScript.symbol('IOPString_USBKEYBD'), 'sys/usbd.irx')
+	patchString(ldScript.symbol('IOPString_MCMAN'), 'sys/mcman.irx')
+	patchString(ldScript.symbol('IOPString_MCSERV'), 'sys/mcserv.irx')
+
+	# Thunk CPS2CDStore to CPS2DiskStore.
+	for method in THUNK_DISKSTORE_METHODS:
+		patchMakeStaticThunk(ldScript.symbol(f'CPS2CDStore_{method}'), ldScript.symbol(f'CPS2DiskStore_{method}'))
+
 
 	# Write the patched ELF file to disk.
 	rollingLief.write(f'../../elf/europa_{GAME}_{REGION}_hostfs_patched.elf')
