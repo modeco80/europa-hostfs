@@ -28,6 +28,9 @@ i32 CMyDiskStore_Seek(CMyDiskStore* self, i32 pos);
 i32 CMyDiskStore_SeekToEnd(CMyDiskStore* self);
 i32 CMyDiskStore_Read(CMyDiskStore* self, void* pvBuf, const u32& count);
 
+i32 CMyDiskStore_ReadString(CMyDiskStore* self, europaStdString* pString);
+i32 CMyDiskStore_ReadLine(CMyDiskStore* self, europaStdString* pLine, char lineFeed, bool clear);
+
 i32 CMyDiskStore_Resize(CMyDiskStore* self, i32 newSize);
 i32 CMyDiskStore_Write(CMyDiskStore* self, u32 count, void* pvBuf);
 
@@ -56,9 +59,8 @@ const static CStorage_vtable CMyDiskStore_vtable = {
 	CStorage_ReadShort,
 	CStorage_ReadInt,
 
-	// for people nice enough to use the vtable.
-	CStorage_ReadString,
-	CStorage_ReadLine,
+	reinterpret_cast<i32(*)(CStorage*, europaStdString*)>(CMyDiskStore_ReadString),
+	reinterpret_cast<i32(*)(CStorage*, europaStdString*, char, bool)>(CMyDiskStore_ReadLine),
 
 	reinterpret_cast<i32(*)(CStorage*, i32)>(CMyDiskStore_Resize),
 	reinterpret_cast<i32(*)(CStorage*, u32, const void*)>(CMyDiskStore_Write),
@@ -171,11 +173,22 @@ i32 CMyDiskStore_Read(CMyDiskStore* self, void* pvBuf, const u32& count) {
 
 // compiler was mean and devirtualized these calls :(
 i32 CMyDiskStore_ReadString(CMyDiskStore* self, europaStdString* pString) {
-	return CStorage_ReadString(self, pString);
+	utilLogf(LogInfo, "CMyDiskStore::ReadString(%08x) called", self);
+	i32 retVal = CStorage_ReadString(self, pString);
+
+	utilLogf(LogInfo, "read: %s", pString->cStr());
+
+	return retVal;
 }
 
 i32 CMyDiskStore_ReadLine(CMyDiskStore* self, europaStdString* pLine, char lineFeed, bool clear) {
-	return CStorage_ReadLine(self, pLine, lineFeed, clear);
+
+	utilLogf(LogInfo, "CMyDiskStore::ReadString(%08x) called", self);
+	i32 retVal = CStorage_ReadLine(self, pLine, lineFeed, clear);
+
+	utilLogf(LogInfo, "read: %s", pLine->cStr());
+
+	return retVal;
 }
 
 i32 CMyDiskStore_Resize(CMyDiskStore* self, i32 newSize) {
@@ -207,7 +220,7 @@ i32 CMyDiskStore_GetCurrPos(CMyDiskStore* self) {
 
 	i32 pos = self->file->tell();
 
-	utilLogf(LogErr, "CMyDiskStore::GetCurrPos(0x%08x) called, pos: %d", self, pos);
+	utilLogf(LogInfo, "CMyDiskStore::GetCurrPos(0x%08x) called, pos: %d", self, pos);
 	return pos;
 }
 
