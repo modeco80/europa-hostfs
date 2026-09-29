@@ -32,6 +32,8 @@ namespace ml {
 		void assign(const String& str);
 		void assign(const char* str);
 
+		void assign(const char* str, u32 len);
+
 		/// Resize the string. May reallocate the string.
 		void resize(u32 len);
 

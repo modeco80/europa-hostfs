@@ -8,6 +8,7 @@ namespace ml {
 	String::String() {
 		mem = nil(char*);
 		length = 0;
+		capacity = 0;
 	}
 
 	String::String(const char* str) {
@@ -47,9 +48,16 @@ namespace ml {
 		memcpy(&mem[0], str, len);
 	}
 
+	void String::assign(const char* str, u32 len) {
+		if(!str)
+			return;
+		resize(len);
+		memcpy(&mem[0], str, len);
+	}
+
 	void String::resize(u32 len) {
 		if(len >= capacity) {
-			reserve(len);
+			reserve(len+4);
 		} else {
 			mem[len] = 0;
 		}

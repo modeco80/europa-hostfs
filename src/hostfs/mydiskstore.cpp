@@ -3,10 +3,13 @@
 
 #include "file.hpp"
 #include "filemanager.hpp"
-#include "utils/log.hpp"
+#include <utils/log.hpp>
 #include <ml/cxx/string.hpp>
 #include <new>
 
+// This file contains a reimplementation of the CStorage interface which
+// uses the FileMan* APIs to do file I/O (which means hostfs/path cleanup, et cetera).
+//
 // Note that we can't be above 0x30 bytes. Not that I think that will be a problem
 // but hey.
 
@@ -81,16 +84,22 @@ const static CStorage_vtable CMyDiskStore_vtable = {
 
 
 void CMyDiskStore_Construct(CMyDiskStore* self, europaStdString* pString, i32 flags) {
-	new (self) CMyDiskStore;
-	self->vtable = &CMyDiskStore_vtable;
+	utilLogf(LogInfo, "CMyDiskStore constructor(0x%08x) called.", self);
 
+	// Bless life of our object
+	new (self) CMyDiskStore;
+
+	self->vtable = &CMyDiskStore_vtable;
 	self->flags = flags;
 	self->actualPath.assign(pString->cStr());
 	self->file = nil(File*);
 }
 
 void CMyDiskStore_Destruct(CMyDiskStore* self) {
-	if(self->file) {
+	utilLogf(LogInfo, "CMyDiskStore destructor(%08x) called.", self);
+
+	// Close the file if the user didn't.
+	if(CMyDiskStore_IsOpen(self)) {
 		CMyDiskStore_Close(self);
 	}
 
@@ -98,7 +107,7 @@ void CMyDiskStore_Destruct(CMyDiskStore* self) {
 }
 
 i32 CMyDiskStore_Open(CMyDiskStore* self) {
-	utilLogf(LogInfo, "CMyDiskStore::Open() called. %s\n", self->actualPath.cStr());
+	utilLogf(LogInfo, "CMyDiskStore::Open() called.");
 	self->file = FileMan_openFile(self->actualPath.cStr());
 	if(self->file == nil(File*))
 		return 0x66; // File couldn't be opened
@@ -106,6 +115,7 @@ i32 CMyDiskStore_Open(CMyDiskStore* self) {
 }
 
 void CMyDiskStore_Close(CMyDiskStore* self) {
+	utilLogf(LogInfo, "CMyDiskStore::Close() called. %s");
 	if(self->file) {
 		FileMan_closeFile(self->file);
 		self->file = nil(File*);
@@ -113,33 +123,50 @@ void CMyDiskStore_Close(CMyDiskStore* self) {
 }
 
 i32 CMyDiskStore_SeekToBeginning(CMyDiskStore* self) {
-	if(self->file == nil(File*))
+	if(!CMyDiskStore_IsOpen(self))
 		return 1001;
 	self->file->seek(0, File::SeekStart);
 	return 0;
 }
 
 i32 CMyDiskStore_Seek(CMyDiskStore* self, i32 pos) {
-	if(self->file == nil(File*))
+	if(!CMyDiskStore_IsOpen(self))
 		return 1001;
-	if(self->file->seek(pos, File::SeekStart) == -1)
+
+	utilLogf(LogInfo, "CMyDiskStore::Seek(0x%08x, pos: %d) called", self, pos);
+
+	if(self->file->seek(pos, File::SeekStart) == -1) {
+		utilLog(LogInfo, "File::seek failed(in CMyDiskStore::Seek)");
 		return 1001;
+	}
+
 	return 0;
 }
 
 i32 CMyDiskStore_SeekToEnd(CMyDiskStore* self) {
-	if(self->file == nil(File*))
+	if(!CMyDiskStore_IsOpen(self))
 		return 1001;
 	self->file->seek(0, File::SeekEnd);
 	return 0;
 }
 
 i32 CMyDiskStore_Read(CMyDiskStore* self, void* pvBuf, const u32& count) {
-	if(self->file == nil(File*))
+	if(!CMyDiskStore_IsOpen(self)) {
+		utilLog(LogErr, "CMyDiskStore::Read() called on an unopened CMyDiskStore instance???");
 		return 1001;
+	}
+
+	//utilLogf(LogInfo, "CMyDiskStore::Read(0x%08x, count: %d) called.", self, count);
 
 	i32 countRead = self->file->read(reinterpret_cast<u8*>(pvBuf), count);
-	return count == countRead;
+
+	if(countRead != count)
+		utilLogf(LogInfo, "File::read returned %d bytes read, user wanted %d", countRead, count);
+
+	if(countRead != count)
+		return 1;
+
+	return 0;
 }
 
 // compiler was mean and devirtualized these calls :(
@@ -164,7 +191,6 @@ void* CMyDiskStore_GetShortcutBuffer(CMyDiskStore* self) {
 	return vnil;
 }
 
-
 i32 CMyDiskStore_GetStorageHints(CMyDiskStore* self) {
 	return 0; // no hints Lol!
 }
@@ -178,7 +204,11 @@ i32 CMyDiskStore_GetSize(CMyDiskStore* self) {
 i32 CMyDiskStore_GetCurrPos(CMyDiskStore* self) {
 	if(self->file == nil(File*))
 		return 0;
-	return self->file->tell();
+
+	i32 pos = self->file->tell();
+
+	utilLogf(LogErr, "CMyDiskStore::GetCurrPos(0x%08x) called, pos: %d", self, pos);
+	return pos;
 }
 
 bool CMyDiskStore_IsOpen(CMyDiskStore* self) {

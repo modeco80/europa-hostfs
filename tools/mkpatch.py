@@ -182,7 +182,7 @@ def main():
 	patchString(ldScript.symbol('IOPString_MCMAN'), 'sys/mcman.irx')
 	patchString(ldScript.symbol('IOPString_MCSERV'), 'sys/mcserv.irx')
 
-	# Thunk CPS2CDStore and CPS2DiskStore to our custom disk store implementation.
+	# Thunk the CPS2CDStore and CPS2DiskStore class methods to our custom disk store implementation.
 	for method in THUNK_DISKSTORE_METHODS:
 		patchMakeStaticThunk(ldScript.symbol(f'CPS2DiskStore_{method}'), patchElf.symbol(f'CMyDiskStore_{method}'))
 		patchMakeStaticThunk(ldScript.symbol(f'CPS2CDStore_{method}'), patchElf.symbol(f'CMyDiskStore_{method}'))

@@ -4,8 +4,9 @@
 #include <ml/types.h>
 
 struct europaStdStringRepr {
-	u32 unk1;
-	u32 unk2;
+	u32 length;
+	u32 capacity;
+	u32 unk;
 	char* mpszString;
 };
 
