@@ -20,6 +20,12 @@ class File {
 	explicit File(i32 fd);
 	~File();
 
+	enum Seek {
+		SeekStart = 0,
+		SeekCur = 1,
+		SeekEnd = 2,
+	};
+
 	i32 read(u8* pvBuf, i32 count);
 
 	i32 tell();

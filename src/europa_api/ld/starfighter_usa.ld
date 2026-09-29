@@ -56,10 +56,32 @@ IOPString_USBKEYBD = 0x004cf440;
 IOPString_MCMAN = 0x004cf458;
 IOPString_MCSERV = 0x004cf468;
 
+/* CStorage */
+
+CStorage_ReadByte = 0x0011a240;
+CStorage_ReadShort = 0x0011a270;
+CStorage_ReadInt = 0x0011a2a0;
+
+CStorage_ReadString = 0x0011a2d0;
+CStorage_ReadLine = 0x0011a380;
+
+CStorage_Copy = 0x0011a450;
+CStorage_CopyAll = 0x0011a690;
+
+CStorage_WriteValue = 0x0011a940;
+CStorage_WriteLine = 0x0011ab70;
+CStorage_WriteFormattedLine = 0x0011a800;
+CStorage_WriteFormattedString = 0x0011a8b0;
+CStorage_WriteFormattedText = 0x0011a770;
+
+CStorage_GetChecksum = 0x0011ac80;
+
+CStorage_IsAtEnd = 0x0011ac20;
+
 /* Disk CStorage impl garbage. */
 
-CPS2CDStore_ct = 0x302990;
-CPS2CDStore_dt = 0x302b20;
+CPS2CDStore_Construct = 0x302990;
+CPS2CDStore_Destruct = 0x302b20;
 CPS2CDStore_Open = 0x302c20;
 CPS2CDStore_Close = 0x302d20;
 CPS2CDStore_SeekToBeginning = 0x302d50;
@@ -75,8 +97,10 @@ CPS2CDStore_GetCurrPos = 0x303060;
 CPS2CDStore_IsOpen = 0x3030b0;
 
 /* CPS2DiskStore methods */
-CPS2DiskStore_ct = 0x13c520;
-CPS2DiskStore_dt = 0x13c6b0;
+CPS2DiskStore_RTTI = 0x004d3358;
+
+CPS2DiskStore_Construct = 0x13c520;
+CPS2DiskStore_Destruct = 0x13c6b0;
 CPS2DiskStore_Open = 0x13c7b0;
 CPS2DiskStore_Close = 0x13ca80;
 CPS2DiskStore_SeekToBeginning = 0x13cad0;
@@ -90,4 +114,9 @@ CPS2DiskStore_Resize = 0x13cd30;
 CPS2DiskStore_GetSize = 0x13cd40;
 CPS2DiskStore_GetCurrPos = 0x13cd70;
 CPS2DiskStore_IsOpen = 0x13cda0;
+
+
+/* Cd sex */
+ps2LoadCdCatalog = 0x00302170;
+ps2CdCatalogLoaded = 0x005cf9f4;
 

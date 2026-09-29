@@ -99,7 +99,8 @@ def patchInjectCore(original: bytes, patchCore: bytes, patchVirtualLoad: int) ->
 	return bytes(result)
 
 THUNK_DISKSTORE_METHODS = [
-	'ct', 'dt',
+	'Construct',
+	'Destruct',
 	'Open',
 	'Close',
 	'SeekToBeginning',
@@ -108,8 +109,8 @@ THUNK_DISKSTORE_METHODS = [
 	'Read',
 	'ReadString',
 	'ReadLine',
-	'Write',
 	'Resize',
+	'Write',
 	'GetSize',
 	'GetCurrPos',
 	'IsOpen'
@@ -181,9 +182,10 @@ def main():
 	patchString(ldScript.symbol('IOPString_MCMAN'), 'sys/mcman.irx')
 	patchString(ldScript.symbol('IOPString_MCSERV'), 'sys/mcserv.irx')
 
-	# Thunk CPS2CDStore to CPS2DiskStore.
+	# Thunk CPS2CDStore and CPS2DiskStore to our custom disk store implementation.
 	for method in THUNK_DISKSTORE_METHODS:
-		patchMakeStaticThunk(ldScript.symbol(f'CPS2CDStore_{method}'), ldScript.symbol(f'CPS2DiskStore_{method}'))
+		patchMakeStaticThunk(ldScript.symbol(f'CPS2DiskStore_{method}'), patchElf.symbol(f'CMyDiskStore_{method}'))
+		patchMakeStaticThunk(ldScript.symbol(f'CPS2CDStore_{method}'), patchElf.symbol(f'CMyDiskStore_{method}'))
 
 
 	# Write the patched ELF file to disk.
