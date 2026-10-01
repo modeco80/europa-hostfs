@@ -19,9 +19,12 @@ _start:
 	/* TODO: zerofill our .bss section. */
 
 	/* Save registers which are clobbered on the stack. */
-	addiu sp, sp, -0x8
+	addiu sp, sp, -0x10
 	sw ra, (sp)
 	sw gp, 4(sp)
+	/* save argc/argv */
+	sw a0, 8(sp)
+	sw a1, 12(sp)
 
 	/* Call C++ global constructors. */
 	jal __do_global_ctors
@@ -44,9 +47,11 @@ _start:
 .Lokay:
 	/* Restore registers which were clobbered from the stack
 	 and clean up the stack, preparing to return back to the game */
+	lw a1, 12(sp)
+	lw a0, 8(sp)
 	lw gp, 4(sp)
 	lw ra, (sp)
-	addiu sp, sp, 0x8
+	addiu sp, sp, 0x10
 
 	/* Execute the first two overwritten instructions of main() */
 	addiu sp, sp, -0x40
