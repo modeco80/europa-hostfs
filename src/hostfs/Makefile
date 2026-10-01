@@ -13,7 +13,7 @@ SOURCES := \
 	main.cpp \
 	file.cpp \
 	filemanager.cpp \
-	mydiskstore.cpp
+	diskstore.cpp
 
 LINKSCRIPT = $(OBJDIR)/blob.ld
 LINKLIBS := \

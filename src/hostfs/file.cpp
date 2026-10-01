@@ -20,6 +20,9 @@ File::File(i32 fd)
 	readBufferPosition = 0;
 	readBufferStart = 0;
 	readBuffer = reinterpret_cast<u8*>(mlMalloc(FILEMAN_READ_BUFFER_SIZE));
+
+	// Do a initial fill of the buffer.
+	fillBuffer();
 }
 
 File::~File() {
@@ -36,17 +39,7 @@ i32 File::read(u8* pvBuf, i32 count) {
 	while(count > 0) {
 		// Check if the buffer has been used up. If so, then we need to read again.
 		if(readBufferPosition == readBufferAvailable) {
-			u32 offset = readBufferStart + readBufferPosition;
-#if defined(FILEMAN_DEBUG) && defined(FILEMAN_DEBUG_READ)
-			utilLogf(LogInfo, "File::read() Need to seek to %d to service read buffer", offset);
-#endif
-			sceLSeek(fd, offset, SCE_SEEK_SET);
-
-			readBufferAvailable = sceRead(fd, &readBuffer[0], FILEMAN_READ_BUFFER_SIZE);
-
-			readBufferStart = offset;
-			readBufferPosition = 0;
-
+			fillBuffer();
 			if(readBufferAvailable == 0)
 				break;
 		}
@@ -120,4 +113,17 @@ i32 File::seek(i32 offset, i32 whence) {
 	}
 
 	return 0;
+}
+
+void File::fillBuffer() {
+	u32 offset = readBufferStart + readBufferPosition;
+	#if defined(FILEMAN_DEBUG) && defined(FILEMAN_DEBUG_READ)
+	utilLogf(LogInfo, "File::read() Need to seek to %d to service read buffer", offset);
+	#endif
+	sceLSeek(fd, offset, SCE_SEEK_SET);
+
+	readBufferAvailable = sceRead(fd, &readBuffer[0], FILEMAN_READ_BUFFER_SIZE);
+
+	readBufferStart = offset;
+	readBufferPosition = 0;
 }

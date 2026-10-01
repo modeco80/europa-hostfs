@@ -119,4 +119,6 @@ CPS2DiskStore_IsOpen = 0x13cda0;
 /* Cd sex */
 ps2LoadCdCatalog = 0x00302170;
 ps2CdCatalogLoaded = 0x005cf9f4;
+ps2CdRead = 0x00302890;
+ps2FileExists = 0x00303680;
 

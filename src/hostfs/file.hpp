@@ -39,6 +39,8 @@ class File {
 	bool eof() {
 		return tell() >= fileSize;
 	}
+private:
+	void fillBuffer();
 };
 
 #endif
