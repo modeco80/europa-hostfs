@@ -13,6 +13,7 @@ SOURCES := \
 	main.cpp \
 	file.cpp \
 	filemanager.cpp \
+	cdst_hooks.cpp \
 	diskstore.cpp
 
 LINKSCRIPT = $(OBJDIR)/blob.ld

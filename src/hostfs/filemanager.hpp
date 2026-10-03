@@ -4,6 +4,9 @@
 #include <ml/types.h>
 #include "file.hpp"
 
+/// Translates a path to a HostFS path.
+void FileMan_translateFileName(char* pszOut, const char* pszInPath);
+
 /// Open a file for reading from HostFS.
 File* FileMan_openFile(const char* pszFileName);
 

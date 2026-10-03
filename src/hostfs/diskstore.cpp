@@ -95,7 +95,7 @@ const static CStorage_vtable CFileManDiskStore_vtable = {
 
 
 void CFileManDiskStore_Construct(CFileManDiskStore* self, europaStdString* pString, i32 flags) {
-	utilLogf(LogInfo, "CFileManDiskStore constructor(0x%08x) called.", self);
+	//utilLogf(LogInfo, "CFileManDiskStore constructor(0x%08x) called.", self);
 
 	// Bless life of our object
 	new (self) CFileManDiskStore;
@@ -107,7 +107,7 @@ void CFileManDiskStore_Construct(CFileManDiskStore* self, europaStdString* pStri
 }
 
 void CFileManDiskStore_Destruct(CFileManDiskStore* self) {
-	utilLogf(LogInfo, "CFileManDiskStore destructor(%08x) called.", self);
+	//utilLogf(LogInfo, "CFileManDiskStore destructor(%08x) called.", self);
 
 	// Close the file if the user didn't.
 	if(CFileManDiskStore_IsOpen(self)) {
@@ -118,7 +118,7 @@ void CFileManDiskStore_Destruct(CFileManDiskStore* self) {
 }
 
 i32 CFileManDiskStore_Open(CFileManDiskStore* self) {
-	utilLogf(LogInfo, "CFileManDiskStore::Open() called.");
+	//utilLogf(LogInfo, "CFileManDiskStore::Open() called.");
 	self->pFile = FileMan_openFile(self->filePath.cStr());
 	if(self->pFile == nil(File*))
 		return 0x66; // File couldn't be opened
@@ -126,7 +126,7 @@ i32 CFileManDiskStore_Open(CFileManDiskStore* self) {
 }
 
 void CFileManDiskStore_Close(CFileManDiskStore* self) {
-	utilLogf(LogInfo, "CFileManDiskStore::Close() called.");
+	//utilLogf(LogInfo, "CFileManDiskStore::Close() called.");
 
 	// Close the file.
 	if(self->pFile != nil(File*)) {
@@ -146,7 +146,7 @@ i32 CFileManDiskStore_Seek(CFileManDiskStore* self, i32 pos) {
 	if(!CFileManDiskStore_IsOpen(self))
 		return 1001;
 
-	utilLogf(LogInfo, "CFileManDiskStore::Seek(0x%08x, pos: %d) called", self, pos);
+	//utilLogf(LogInfo, "CFileManDiskStore::Seek(0x%08x, pos: %d) called", self, pos);
 
 	if(self->pFile->seek(pos, File::SeekStart) == -1) {
 		utilLog(LogInfo, "File::seek failed(in CFileManDiskStore::Seek)");
@@ -241,7 +241,7 @@ bool CFileManDiskStore_IsOpen(CFileManDiskStore* self) {
 bool CFileManDiskStore_IsAtEnd(CFileManDiskStore* self) {
 	if(!CFileManDiskStore_IsOpen(self))
 		return true;
-	utilLogf(LogInfo, "CFileManDiskStore::IsAtEnd(0x%08x) called, at end: %s", self->pFile->eof() ? "yes" : "no");
+	//utilLogf(LogInfo, "CFileManDiskStore::IsAtEnd(0x%08x) called, at end: %s", self->pFile->eof() ? "yes" : "no");
 	return self->pFile->eof();
 }
 

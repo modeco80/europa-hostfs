@@ -14,22 +14,24 @@
 namespace {
 	ml::FreeList<File, FILEMAN_MAX_FILES> openFileList;
 
-	void translateFileName(char* pszOut, const char* pszInPath) {
-		mlStaticStrCpy(pszOut, "host0:");
-		strcat(pszOut, pszInPath);
 
-		const u32 len = strlen(pszOut);
-		for(u32 i = sizeof("host0:") - 1; i < len; ++i) {
-			// Clean up the case of file paths so it is entirely lowercase.
-			if(pszOut[i] >= 'A' && pszOut[i] <= 'Z')
-				pszOut[i] |= 0x20;
-
-			// Fix up the objectively incorrect directory seperator to the correct one.
-			if(pszOut[i] == '\\')
-				pszOut[i] = '/';
-		}
-	}
 } // namespace
+
+void FileMan_translateFileName(char* pszOut, const char* pszInPath) {
+	mlStaticStrCpy(pszOut, "host0:");
+	strcat(pszOut, pszInPath);
+
+	const u32 len = strlen(pszOut);
+	for(u32 i = sizeof("host0:") - 1; i < len; ++i) {
+		// Clean up the case of file paths so it is entirely lowercase.
+		if(pszOut[i] >= 'A' && pszOut[i] <= 'Z')
+			pszOut[i] |= 0x20;
+
+		// Fix up the objectively incorrect directory seperator to the correct one.
+		if(pszOut[i] == '\\')
+			pszOut[i] = '/';
+	}
+}
 
 File* FileMan_openFile(const char* path) {
 	File* pFile = openFileList.allocate();
@@ -39,7 +41,7 @@ File* FileMan_openFile(const char* path) {
 	}
 
 	char translatedPath[512];
-	translateFileName(&translatedPath[0], path);
+	FileMan_translateFileName(&translatedPath[0], path);
 
 #if defined(FILEMAN_DEBUG) && defined(FILEMAN_DEBUG_OPEN)
 	utilLogf(LogInfo, "HostFS Open %s", translatedPath);

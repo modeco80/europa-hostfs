@@ -164,6 +164,11 @@ def main():
 		rollingLief.patch_address(patch, list(THUNK))
 		print(f'Static thunk of 0x{patch:08x} to 0x{thunkto:08x} applied.')
 
+	def patchMakeStreamMgrThunk(patch: int, thunkto: int, thunkOut: int):
+		THUNK = Mips.move(Mips.a0, Mips.v0) + Mips.jal(thunkto) + Mips.nop() + Mips.j(thunkOut) + Mips.nop()
+		rollingLief.patch_address(patch, list(THUNK))
+		print(f'Static thunk of 0x{patch:08x} to 0x{thunkto:08x} applied.')
+
 	# Patch the program break to be ahead of the core, so that memory allocations do not break us.
 	# Once done, patch the start of main() to jump to the core entry point.
 	rollingLief.patch_address(ldScript.symbol('__HOOK_sbrk_break'), adjustedEnd)
@@ -181,6 +186,10 @@ def main():
 	patchString(ldScript.symbol('IOPString_USBKEYBD'), 'sys/usbd.irx')
 	patchString(ldScript.symbol('IOPString_MCMAN'), 'sys/mcman.irx')
 	patchString(ldScript.symbol('IOPString_MCSERV'), 'sys/mcserv.irx')
+
+	patchMakeStreamMgrThunk(ldScript.symbol('CPS2StreamMgr_AddStreamHook'), patchElf.symbol('StreamMgr_addLecalStreamPath'), ldScript.symbol('CPS2StreamMgr_AddStreamThunkout'))
+
+	rollingLief.patch_address(ldScript.symbol('LECAudio_OpenStreamDirectFast_CmdNo'), [0x20, 0x83])
 
 	# Thunk the CPS2CDStore and CPS2DiskStore class methods to our custom disk store implementation.
 	for method in THUNK_DISKSTORE_METHODS:

@@ -39,6 +39,7 @@ main = 0x003a8b50;
 mainTrampoline = 0x0003a8b58;
 
 LECOutputConsoleImpl = 0x0012c9f0;
+OutputConsoleAlso = 0x0012c660;
 
 /* IOP module strings */
 
@@ -124,3 +125,13 @@ ps2CdCatalogLoaded = 0x005cf9f4;
 ps2CdRead = 0x00302890;
 ps2FileExists = 0x00303680;
 
+/* CPS2StreamMgr */
+CPS2StreamMgr_AddStreamHook = 0x00316f28;
+CPS2StreamMgr_AddStreamThunkout = 0x00316f80;
+
+/* LECAL */
+
+LECAudio_OpenStreamDirectFast_CmdNo = 0x00410578;
+
+RPCCall__8LECAudioUiPvN72 = 0x00410bd0;
+g_lecAudio = 0x0060c360;
