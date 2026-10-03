@@ -13,8 +13,6 @@
 
 namespace {
 	ml::FreeList<File, FILEMAN_MAX_FILES> openFileList;
-
-
 } // namespace
 
 void FileMan_translateFileName(char* pszOut, const char* pszInPath) {
@@ -44,13 +42,13 @@ File* FileMan_openFile(const char* path) {
 	FileMan_translateFileName(&translatedPath[0], path);
 
 #if defined(FILEMAN_DEBUG) && defined(FILEMAN_DEBUG_OPEN)
-	utilLogf(LogInfo, "HostFS Open %s", translatedPath);
+	utilLogf(LogInfo, "[FileMan] HostFS Open %s", translatedPath);
 #endif
 
 	i32 fd = sceOpen(translatedPath, SCE_RDONLY);
 	if(fd < 0) {
 #if defined(FILEMAN_DEBUG) && defined(FILEMAN_DEBUG_OPEN)
-		utilLogf(LogErr, "HostFS Open FAIL %s", translatedPath);
+		utilLogf(LogErr, "[FileMan] HostFS Open FAIL %s", translatedPath);
 #endif
 		openFileList.free(pFile);
 		return nil(File*);

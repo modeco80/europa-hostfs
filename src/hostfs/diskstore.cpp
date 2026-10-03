@@ -17,6 +17,16 @@
 // - Centralizing I/O throughout using FileMan/File APIs. Paths are cleaned up too,
 //	which should hopefully help with casing issues.
 
+//#define DISKSTORE_DEBUG
+
+#ifdef DISKSTORE_DEBUG
+	#define diskstoreDebugLog(level, msg) utilLog(level, msg)
+	#define diskstoreDebugLogf(level, fmt, ...) utilLogf(level, fmt, __VA_ARGS__)
+#else
+	#define diskstoreDebugLog(level, msg)
+	#define diskstoreDebugLogf(level, fmt, ...)
+#endif
+
 struct CFileManDiskStore : CStorage {
 	i32 flags;
 	ml::String filePath;
@@ -95,7 +105,7 @@ const static CStorage_vtable CFileManDiskStore_vtable = {
 
 
 void CFileManDiskStore_Construct(CFileManDiskStore* self, europaStdString* pString, i32 flags) {
-	//utilLogf(LogInfo, "CFileManDiskStore constructor(0x%08x) called.", self);
+	diskstoreDebugLogf(LogInfo, "CFileManDiskStore constructor(0x%08x) called.", self);
 
 	// Bless life of our object
 	new (self) CFileManDiskStore;
@@ -107,7 +117,7 @@ void CFileManDiskStore_Construct(CFileManDiskStore* self, europaStdString* pStri
 }
 
 void CFileManDiskStore_Destruct(CFileManDiskStore* self) {
-	//utilLogf(LogInfo, "CFileManDiskStore destructor(%08x) called.", self);
+	diskstoreDebugLogf(LogInfo, "CFileManDiskStore destructor(%08x) called.", self);
 
 	// Close the file if the user didn't.
 	if(CFileManDiskStore_IsOpen(self)) {
@@ -118,7 +128,7 @@ void CFileManDiskStore_Destruct(CFileManDiskStore* self) {
 }
 
 i32 CFileManDiskStore_Open(CFileManDiskStore* self) {
-	//utilLogf(LogInfo, "CFileManDiskStore::Open() called.");
+	diskstoreDebugLog(LogInfo, "CFileManDiskStore::Open() called.");
 	self->pFile = FileMan_openFile(self->filePath.cStr());
 	if(self->pFile == nil(File*))
 		return 0x66; // File couldn't be opened
@@ -126,7 +136,7 @@ i32 CFileManDiskStore_Open(CFileManDiskStore* self) {
 }
 
 void CFileManDiskStore_Close(CFileManDiskStore* self) {
-	//utilLogf(LogInfo, "CFileManDiskStore::Close() called.");
+	diskstoreDebugLog(LogInfo, "CFileManDiskStore::Close() called.");
 
 	// Close the file.
 	if(self->pFile != nil(File*)) {
@@ -149,7 +159,7 @@ i32 CFileManDiskStore_Seek(CFileManDiskStore* self, i32 pos) {
 	//utilLogf(LogInfo, "CFileManDiskStore::Seek(0x%08x, pos: %d) called", self, pos);
 
 	if(self->pFile->seek(pos, File::SeekStart) == -1) {
-		utilLog(LogInfo, "File::seek failed(in CFileManDiskStore::Seek)");
+		diskstoreDebugLog(LogInfo, "File::seek failed(in CFileManDiskStore::Seek)");
 		return 1001;
 	}
 
@@ -165,16 +175,16 @@ i32 CFileManDiskStore_SeekToEnd(CFileManDiskStore* self) {
 
 i32 CFileManDiskStore_Read(CFileManDiskStore* self, void* pvBuf, const u32& count) {
 	if(!CFileManDiskStore_IsOpen(self)) {
-		utilLog(LogErr, "CFileManDiskStore::Read() called on an unopened CFileManDiskStore instance???");
+		diskstoreDebugLog(LogErr, "CFileManDiskStore::Read() called on an unopened CFileManDiskStore instance???");
 		return 1001;
 	}
 
-	//utilLogf(LogInfo, "CFileManDiskStore::Read(0x%08x, count: %d) called.", self, count);
+	diskstoreDebugLogf(LogInfo, "CFileManDiskStore::Read(0x%08x, count: %d) called.", self, count);
 
 	i32 countRead = self->pFile->read(reinterpret_cast<u8*>(pvBuf), count);
 
 	if(countRead != count)
-		utilLogf(LogInfo, "File::read returned %d bytes read, user wanted %d", countRead, count);
+		diskstoreDebugLogf(LogInfo, "File::read returned %d bytes read, user wanted %d", countRead, count);
 
 	if(countRead != count)
 		return 1;
@@ -184,20 +194,16 @@ i32 CFileManDiskStore_Read(CFileManDiskStore* self, void* pvBuf, const u32& coun
 
 // compiler was mean and devirtualized these calls :(
 i32 CFileManDiskStore_ReadString(CFileManDiskStore* self, europaStdString* pString) {
-	//utilLogf(LogInfo, "CFileManDiskStore::ReadString(%08x) called", self);
+	diskstoreDebugLogf(LogInfo, "CFileManDiskStore::ReadString(%08x) called", self);
 	i32 retVal = CStorage_ReadString(self, pString);
-
-	//utilLogf(LogInfo, "read: %s", pString->cStr());
-
+	diskstoreDebugLogf(LogInfo, "read: %s", pString->cStr());
 	return retVal;
 }
 
 i32 CFileManDiskStore_ReadLine(CFileManDiskStore* self, europaStdString* pLine, char lineFeed, bool clear) {
-	//utilLogf(LogInfo, "CFileManDiskStore::ReadLine(%08x) called", self);
+	diskstoreDebugLogf(LogInfo, "CFileManDiskStore::ReadLine(%08x) called", self);
 	i32 retVal = CStorage_ReadLine(self, pLine, lineFeed, clear);
-
-	//utilLogf(LogInfo, "read: %s", pLine->cStr());
-
+	diskstoreDebugLogf(LogInfo, "read: %s", pLine->cStr());
 	return retVal;
 }
 
@@ -230,7 +236,7 @@ i32 CFileManDiskStore_GetCurrPos(CFileManDiskStore* self) {
 
 	i32 pos = self->pFile->tell();
 
-	//utilLogf(LogInfo, "CFileManDiskStore::GetCurrPos(0x%08x) called, pos: %d", self, pos);
+	diskstoreDebugLogf(LogInfo, "CFileManDiskStore::GetCurrPos(0x%08x) called, pos: %d", self, pos);
 	return pos;
 }
 

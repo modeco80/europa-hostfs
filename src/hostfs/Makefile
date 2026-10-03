@@ -13,6 +13,7 @@ SOURCES := \
 	main.cpp \
 	file.cpp \
 	filemanager.cpp \
+	stringutil.cpp \
 	console.cpp \
 	cdcatalog.cpp \
 	cdst_hooks.cpp \

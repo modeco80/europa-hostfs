@@ -9,12 +9,15 @@
 
 #include "file.hpp"
 #include "filemanager.hpp"
+#include "stringutil.hpp"
 
 // These hooks define a "fake" version of the sceCdSt* API functions,
 // which are fully compatible in place with the original APIs, but
 // use our FileMan_*/File APIs, which are hostfs.
 
 //#define CDST_DEBUG
+
+extern "C" int ps2QueryCdCatalog(const europaStdString& path, u32* lba, u32* size);
 
 // Fake version of the sceCdlFILE struct we return.
 struct sceCdFile {
@@ -29,41 +32,10 @@ struct sceCdFile {
 char gszCurrentCdStreamFileName[64];
 File* gpCurrentCdStreamFile = nil(File*);
 
-
-extern "C" int ps2QueryCdCatalog(const europaStdString& path, u32* lba, u32* size);
-
-// evil. Does NOT need to be fast.
-bool stringStartsWith(const char* __restrict haystack, const char* __restrict needle) {
-	const u32 haystackLength = strlen(haystack);
-	const u32 needleLength = strlen(needle);
-
-	// can't completely store the needle, so don't bother
-	if(haystackLength < needleLength)
-		return false;
-
-	// Though we could unroll these to word at a time, I suppose.
-	for(u32 i = 0; i < needleLength; ++i)
-		if(haystack[i] != needle[i])
-			return false;
-
-	return true;
-}
-
-void stringCopyLower(char* __restrict dst, const char* __restrict src) {
-	const u32 len = strlen(src);
-	for(u32 i = 0; i < len; ++i) {
-		if(src[i] >= 'A' && src[i] <= 'Z') {
-			dst[i] = src[i] | 0x20;
-		} else {
-			dst[i] = src[i];
-		}
-	}
-	dst[len] = '\0';
-}
-
 FUNC_REPLACE(ps2QueryCdCatalog, int, const europaStdString& path, const char** filename, u32* size) {
+#ifdef CDST_DEBUG
 	utilLogf(LogInfo, "ps2QueryCdCatalog called path: %s", path.cStr());
-#if 1
+#endif
 	File* pHostFile = FileMan_openFile(path.cStr());
 	if(pHostFile == nil(File*))
 		return 1;
@@ -72,10 +44,9 @@ FUNC_REPLACE(ps2QueryCdCatalog, int, const europaStdString& path, const char** f
 
 	// This is a bit of a hack. Basically, the LECAL IOP module expects
 	// just the final file name, and it will try and open all it's known stream
-	// directories. So, we need to strip the path out.
+	// directories. So, we need to strip the path out. This works okay even though
+	// it kind of sucks, although the original game's behaviour is also questionable.
 	if(!stringStartsWith(pszPath, "STREAMS\\VIDEO")) {
-		utilLogf(LogInfo, "Path is a LECAL stream path. Engaging evil hack");
-
 		// Strip the path out.
 		const char* pszEnd = pszPath + strlen(pszPath);
 		while(*pszEnd != '\\')
@@ -92,7 +63,6 @@ FUNC_REPLACE(ps2QueryCdCatalog, int, const europaStdString& path, const char** f
 	*size = pHostFile->getSize();
 	FileMan_closeFile(pHostFile);
 	return 0;
-#endif
 }
 
 FUNC_REPLACE(sceCdStInit, i32, u32 maxBuffers, u32 maxBanks, u32 iopBuffer) {
