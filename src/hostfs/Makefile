@@ -16,6 +16,7 @@ SOURCES := \
 	console.cpp \
 	cdcatalog.cpp \
 	cdst_hooks.cpp \
+	lecal.cpp \
 	diskstore.cpp
 
 LINKSCRIPT = $(OBJDIR)/blob.ld
