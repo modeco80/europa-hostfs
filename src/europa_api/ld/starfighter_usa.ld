@@ -28,16 +28,17 @@ sceRead = 0x003fa490;
 sceLSeek = 0x003fa320;
 
 /* libcdvd */
-sceCdStInit = 0x002cd8a0;
-sceCdStStart = 0x002cd8d0;
-sceCdStStop = 0x002cd968;
-sceCdStRead = 0x002cd9a0;
+sceCdStInit = 0x00415d90;
+sceCdStStart = 0x00415dc0;
+sceCdStStop = 0x00415e28;
+sceCdStRead = 0x00415e60;
 
 /* Europa! */
 
 main = 0x003a8b50;
 mainTrampoline = 0x0003a8b58;
 
+LECOutputConsoleImpl = 0x0012c9f0;
 
 /* IOP module strings */
 
@@ -118,6 +119,7 @@ CPS2DiskStore_IsOpen = 0x13cda0;
 
 /* Cd sex */
 ps2LoadCdCatalog = 0x00302170;
+ps2QueryCdCatalog = 0x003025d0;
 ps2CdCatalogLoaded = 0x005cf9f4;
 ps2CdRead = 0x00302890;
 ps2FileExists = 0x00303680;
