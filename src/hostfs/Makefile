@@ -14,6 +14,7 @@ SOURCES := \
 	file.cpp \
 	filemanager.cpp \
 	console.cpp \
+	cdcatalog.cpp \
 	cdst_hooks.cpp \
 	diskstore.cpp
 

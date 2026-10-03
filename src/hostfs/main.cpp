@@ -6,35 +6,9 @@
 #include <europa/stdstring.h>
 #include <ml/string.h>
 
-extern "C" {
-	extern bool ps2CdCatalogLoaded;
-	void ps2LoadCdCatalog();
-
-	bool ps2FileExists(const europaStdString& pathName);
-
-}
-
-bool cdStreamInitHooks();
 bool consoleInitHooks();
-
-FUNC_REPLACE0(ps2LoadCdCatalog, void) {
-	utilLogf(LogInfo, "ps2LoadCdCatalog called?");
-	ps2CdCatalogLoaded = true;
-
-	utilLogf(LogInfo, "ps2LoadCdCatalog returning");
-	return;
-}
-
-FUNC_REPLACE(ps2FileExists, bool, const europaStdString& pathName) {
-	//utilLogf(LogInfo, "ps2FileExists(%s)", pathName.cStr());
-	File* pfile = FileMan_openFile(pathName.cStr());
-	if(pfile != nil(File*)) {
-		FileMan_closeFile(pfile);
-		return true;
-	}
-	return false;
-}
-
+bool cdStreamInitHooks();
+bool cdCatalogInitHooks();
 
 CLASS_HOOK(u64, LECAudio, RPCCall, u32 cmd, void* param, void* param2, void* param3, void* param4, void* param5, void* param6, void* param7, void* param8) {
 	if((cmd & 0x8350) == 0x8350) {
@@ -45,7 +19,8 @@ CLASS_HOOK(u64, LECAudio, RPCCall, u32 cmd, void* param, void* param2, void* par
 			const u32 newCommand = ulChannel | 0x8340;
 			utilLogf(LogInfo, "DEBUG! old command was 0x%04x, new command is 0x%04x", cmd, newCommand);
 
-			// The arguments are in the correct order for OPEN_STREAM_DIRECT_FAST
+			// The arguments are in the correct order for OPEN_STREAM_DIRECT_FAST,
+			// but we need to re-order them for OPEN_STREAM_FAST.
 			// Arguments for OPEN_STREAM_FAST
 			// param is filename (thanks to fileexists/query hooks)
 			// param2 is ulStreamPlayId
@@ -56,7 +31,7 @@ CLASS_HOOK(u64, LECAudio, RPCCall, u32 cmd, void* param, void* param2, void* par
 		}
 	}
 
-	// Otherwise pass through and call the original function
+	// Otherwise pass through the original RPC call.
 	return hook_LECAudio_RPCCall.original(klass, cmd, param, param2, param3, param4, param5, param6, param7, param8);
 }
 
@@ -67,9 +42,8 @@ extern "C" void StreamMgr_addLecalStreamPath(const char* psz) {
 	strcat(&translatedPath[0], "/"); // hack
 
 	utilLogf(LogInfo, "Adding LECAUDIO.IRX stream path %s", translatedPath);
-	g_lecAudio.RPCCall(0x80d0, (void*)&translatedPath[0], vnil, vnil, vnil, vnil, vnil, vnil, vnil);
+	g_lecAudio.AddStreamPath(translatedPath);
 }
-
 
 extern "C" int modMain() {
 	utilLogf(LogInfo, "Europa HostFS patch (Game: %s). 2026 modeco80",
@@ -88,17 +62,10 @@ extern "C" int modMain() {
 		return 1;
 	}
 
-	if(!hook_ps2LoadCdCatalog.hook()) {
-		utilLogf(LogErr, "Failed to hook ps2LoadCdCatalog");
+	if(!cdCatalogInitHooks()) {
+		utilLogf(LogErr, "Failed to hook CD catalog functions.");
 		return 1;
 	}
-
-
-	if(!hook_ps2FileExists.hook()) {
-		utilLogf(LogErr, "Failed to hook ps2FileExists");
-		return 1;
-	}
-
 
 	if(!hook_LECAudio_RPCCall.hook()) {
 		utilLogf(LogErr, "Failed to hook LECAudio::RPCCall");
