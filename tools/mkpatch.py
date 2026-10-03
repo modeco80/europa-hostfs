@@ -189,8 +189,6 @@ def main():
 
 	patchMakeStreamMgrThunk(ldScript.symbol('CPS2StreamMgr_AddStreamHook'), patchElf.symbol('StreamMgr_addLecalStreamPath'), ldScript.symbol('CPS2StreamMgr_AddStreamThunkout'))
 
-	rollingLief.patch_address(ldScript.symbol('LECAudio_OpenStreamDirectFast_CmdNo'), [0x20, 0x83])
-
 	# Thunk the CPS2CDStore and CPS2DiskStore class methods to our custom disk store implementation.
 	for method in THUNK_DISKSTORE_METHODS:
 		patchMakeStaticThunk(ldScript.symbol(f'CPS2DiskStore_{method}'), patchElf.symbol(f'CFileManDiskStore_{method}'))

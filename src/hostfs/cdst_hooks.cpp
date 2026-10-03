@@ -14,7 +14,7 @@
 // which are fully compatible in place with the original APIs, but
 // use our FileMan_*/File APIs, which are hostfs.
 
-#define CDST_DEBUG
+//#define CDST_DEBUG
 
 // Fake version of the sceCdlFILE struct we return.
 struct sceCdFile {
