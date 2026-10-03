@@ -13,6 +13,7 @@ SOURCES := \
 	main.cpp \
 	file.cpp \
 	filemanager.cpp \
+	console.cpp \
 	cdst_hooks.cpp \
 	diskstore.cpp
 

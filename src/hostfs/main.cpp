@@ -12,12 +12,10 @@ extern "C" {
 
 	bool ps2FileExists(const europaStdString& pathName);
 
-
-	void LECOutputConsoleImpl(int level, const char* psz, __builtin_va_list val);
-	void OutputConsoleAlso(const europaStdString& str, int level);
 }
 
 bool cdStreamInitHooks();
+bool consoleInitHooks();
 
 FUNC_REPLACE0(ps2LoadCdCatalog, void) {
 	utilLogf(LogInfo, "ps2LoadCdCatalog called?");
@@ -37,18 +35,6 @@ FUNC_REPLACE(ps2FileExists, bool, const europaStdString& pathName) {
 	return false;
 }
 
-// Utility hook; this allows getting output from LECOutputConsole().
-FUNC_HOOK(LECOutputConsoleImpl, void, int level, const char* psz, __builtin_va_list val) {
-	char buf[1024];
-	vsprintf(&buf[0], psz, val);
-	utilLogf(LogInfo, "[Europa console] %s", buf);
-	return hook_LECOutputConsoleImpl.original(level, psz, val);
-}
-
-FUNC_HOOK(OutputConsoleAlso, void, const europaStdString& str, int level) {
-	utilLogf(LogInfo, "[Europa console] %s", str.cStr());
-	return hook_OutputConsoleAlso.original(str,level);
-}
 
 CLASS_HOOK(u64, LECAudio, RPCCall, u32 cmd, void* param, void* param2, void* param3, void* param4, void* param5, void* param6, void* param7, void* param8) {
 	if((cmd & 0x8350) == 0x8350) {
@@ -92,15 +78,8 @@ extern "C" int modMain() {
 #endif
 	);
 
-	// Hook debug console stuff so we can see it better
-
-	if(!hook_LECOutputConsoleImpl.hook()) {
-		utilLogf(LogErr, "Failed to hook LECOutputConsoleImpl");
-		return 1;
-	}
-
-	if(!hook_OutputConsoleAlso.hook()) {
-		utilLogf(LogErr, "Failed to hook OutputConsoleAlso");
+	if(!consoleInitHooks()) {
+		utilLogf(LogErr, "Failed to hook console functions.");
 		return 1;
 	}
 
