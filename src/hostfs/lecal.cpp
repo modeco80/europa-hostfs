@@ -44,6 +44,11 @@ CLASS_HOOK(u64, LECAudio, RPCCall, u32 cmd, void* param, void* param2, void* par
 extern "C" void StreamMgr_addLecalStreamPath(const char* psz) {
 	// Translate the path to a hostfs path using the FileMan API to do so.
 	char translatedPath[512];
+
+	// Skip $ in europacd.reg paths.
+	if(*psz == '$')
+		psz++;
+
 	FileMan_translateFileName(&translatedPath[0], psz);
 	strcat(&translatedPath[0], "/"); // hack
 
