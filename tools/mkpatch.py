@@ -183,7 +183,7 @@ def main():
 	patchString(ldScript.symbol('IOPString_SDRDRV'), 'sys/sdrdrv.irx')
 	patchString(ldScript.symbol('IOPString_LECAUDIO'), 'sys/lecaudio.irx')
 	patchString(ldScript.symbol('IOPString_USBD'), 'sys/usbd.irx')
-	patchString(ldScript.symbol('IOPString_USBKEYBD'), 'sys/usbd.irx')
+	patchString(ldScript.symbol('IOPString_USBKEYBD'), 'sys/usbkeybd.irx')
 	patchString(ldScript.symbol('IOPString_MCMAN'), 'sys/mcman.irx')
 	patchString(ldScript.symbol('IOPString_MCSERV'), 'sys/mcserv.irx')
 
