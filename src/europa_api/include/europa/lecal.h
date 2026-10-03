@@ -3,6 +3,11 @@
 
 #include <ml/types.h>
 
+enum LECAL_COMMAND {
+	LECAL_OPEN_STREAM_FAST = 0x8340,
+	LECAL_OPEN_STREAM_DIRECT_FAST = 0x8350
+};
+
 class LECAudio {
 public:
 	void RPCCall(u32 cmd, void* param, void* param2, void* param3, void* param4, void* param5, void* param6, void* param7, void* param8);

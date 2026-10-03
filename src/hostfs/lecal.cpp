@@ -6,14 +6,24 @@
 #include <europa/stdstring.h>
 #include <ml/string.h>
 
+#define LECAL_DEBUG
+
+#ifdef LECAL_DEBUG
+	#define lecalDebugLog(level, msg) utilLog(level, msg)
+	#define lecalDebugLogf(level, fmt, ...) utilLogf(level, fmt, __VA_ARGS__)
+#else
+	#define lecalDebugLog(level, msg)
+	#define lecalDebugLogf(level, fmt, ...)
+#endif
+
 CLASS_HOOK(u64, LECAudio, RPCCall, u32 cmd, void* param, void* param2, void* param3, void* param4, void* param5, void* param6, void* param7, void* param8) {
-	if((cmd & 0x8350) == 0x8350) {
-		const u32 ulChannel = (cmd & ~0x8350);
+	if((cmd & LECAL_OPEN_STREAM_DIRECT_FAST) == LECAL_OPEN_STREAM_DIRECT_FAST) {
+		const u32 ulChannel = (cmd & ~LECAL_OPEN_STREAM_DIRECT_FAST);
 		// If this command is a valid OPEN_STREAM_DIRECT_FAST command,
 		// then replace the OPEN_STREAM_DIRECT_FAST command with OPEN_STREAM_FAST.
 		if(ulChannel < 2) {
-			const u32 newCommand = ulChannel | 0x8340;
-			utilLogf(LogInfo, "DEBUG! old command was 0x%04x, new command is 0x%04x", cmd, newCommand);
+			const u32 newCommand = ulChannel | LECAL_OPEN_STREAM_FAST;
+			lecalDebugLogf(LogInfo, "[LECAL] LECAL_OPEN_STREAM_DIRECT_FAST command replacement: Old command was 0x%04x, new command is 0x%04x", cmd, newCommand);
 
 			// The arguments are in the correct order for OPEN_STREAM_DIRECT_FAST,
 			// but we need to re-order them for OPEN_STREAM_FAST.
@@ -37,13 +47,13 @@ extern "C" void StreamMgr_addLecalStreamPath(const char* psz) {
 	FileMan_translateFileName(&translatedPath[0], psz);
 	strcat(&translatedPath[0], "/"); // hack
 
-	utilLogf(LogInfo, "Adding LECAUDIO.IRX stream path %s", translatedPath);
+	utilLogf(LogInfo, "[LECAL] Adding stream path %s", translatedPath);
 	g_lecAudio.AddStreamPath(translatedPath);
 }
 
 bool lecalInitHooks() {
 	if(!hook_LECAudio_RPCCall.hook()) {
-		utilLogf(LogErr, "Failed to hook LECAudio::RPCCall.");
+		utilLogf(LogErr, "[LECAL] Failed to hook LECAudio::RPCCall.");
 		return false;
 	}
 
