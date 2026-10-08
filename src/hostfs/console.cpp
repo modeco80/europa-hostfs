@@ -17,7 +17,7 @@ FUNC_HOOK(LECOutputConsoleImpl, void, int level, const char* psz, __builtin_va_l
 }
 
 FUNC_HOOK(OutputConsoleAlso, void, const europaStdString& str, int level) {
-	//utilLogf(LogInfo, "[Europa console] %s", str.cStr());
+	utilLogf(LogInfo, "[Europa console] %s", str.cStr());
 	return hook_OutputConsoleAlso.original(str,level);
 }
 
