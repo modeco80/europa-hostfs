@@ -99,7 +99,7 @@ FUNC_REPLACE(sceCdStRead, i32, u32 sectorCount, u32* buf, u32 mode, u32* err) {
 #ifdef CDST_DEBUG
 		utilLogf(LogInfo, "sceCdStRead(): Stream has ended");
 #endif
-		return -1;
+		return 0;
 	}
 
 	i32 nRead = gpCurrentCdStreamFile->read(reinterpret_cast<u8*>(&buf[0]), sectorCount * 0x800);
