@@ -1,6 +1,6 @@
 # Europa HostFS Patch
 
-This is a HostFS patch for the Europa based games.
+This is a HostFS patch for the LEC Europa based games.
 
 # Installation
 
@@ -12,13 +12,13 @@ Patch the game ELF file using an xdelta patcher of your choosing.
 
 You may remove the `EUROPA.CD` file, since it is not used or read by the game at all anymore.
 
-Using a text editor of your choosing, edit `EUROPACD.REG`, and scroll down to the portion of the file which contains with `LucasArts Entertainment Company LLC\Europa Dev Platform\Streaming`. After that line should be a line that looks like:
+Using a text editor of your choosing, edit `EUROPACD.REG`, and scroll down to the portion of the file which contains `LucasArts Entertainment Company LLC\Europa Dev Platform\Streaming`. After that line should be a line that looks like:
 
 ```
 "StreamDirs"= ...
 ```
 
-The strings in there have $ characters in them, which need to be removed. Once removed, save the file, and that's that.
+The strings in there have `$` characters in them. Those characters (only the `$` characters, not the whole string) need to be removed. Once done, save the file, and that's that.
 
 ## Continuation
 
@@ -30,7 +30,9 @@ Launch the patched ELF from your game list and enjoy!
 
 The ELF is statically patched to jump to code that we also patch into the ELF file (besides some boring string patches and static trampolines).
 
-The code that the ELF is hijacked into running to sets up more advanced hooks, and includes a re-implementation of the game's CStorage interface, which it uses for file I/O. While this was not entirely nesscary, I found it cleaner to completely reimplement the class, since the file layer that the reimplementation is built on is also used for other things.
+The code that the ELF is hijacked into running sets up more advanced hooks, and includes a re-implementation of Europa's `CStorage` interface class, which the engine uses for almost all of its file I/O tasks.
+
+While this was not entirely required (there is a leftover `CStorage` implementation which uses the EE FIO layer), I found it cleaner to completely reimplement the class, since the file layer that the reimplementation is built on is also used for other things, and unifying the usage of that layer was seen as better.
 
 The game's lookup for CD sectors is hijacked to instead return a pointer to filename that we consume in specific cases:
 	- Calls to LECAL (their own re-imagination of RAD's Miles Sound System?? I'm not sure as to why, since it was on PS2 to my knowledge, but... hey) were originally hardcoded to use CD LBAs. The patch code re-orders the arguments to the RPC call function, and changes the RPC command to the correct one to use host filesystem, which works!
