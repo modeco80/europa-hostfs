@@ -6,7 +6,7 @@
 #include <europa/stdstring.h>
 #include <ml/string.h>
 
-#define LECAL_DEBUG
+//#define LECAL_DEBUG
 
 #ifdef LECAL_DEBUG
 	#define lecalDebugLog(level, msg) utilLog(level, msg)

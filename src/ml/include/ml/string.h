@@ -22,6 +22,7 @@ void* memcpy(void* dst, const void* src, u32 len);
 // bit of a hack, but saves needing strcpy directly in cases where
 // you only need the literal :)
 #define mlStaticStrCpy(dst, srcStrLiteral) memcpy(dst, &(srcStrLiteral)[0], sizeof(srcStrLiteral))
+#define mlStaticStrLen(strLiteral) (sizeof(strLiteral)-1)
 
 void strcat(char* dst, const char* src);
 
