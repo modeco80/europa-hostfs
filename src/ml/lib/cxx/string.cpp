@@ -58,10 +58,10 @@ namespace ml {
 	void String::resize(u32 len) {
 		if(len >= capacity) {
 			reserve(len+4);
-		} else {
-			mem[len] = 0;
 		}
 
+		// null terminate
+		mem[len] = 0;
 		length = len;
 	}
 
