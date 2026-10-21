@@ -6,6 +6,7 @@ import subprocess
 from elftools.elf.elffile import ELFFile
 from elftools.elf.sections import Section, SymbolTableSection
 
+# FIXME: This should not be hardcoded!
 GCC_PATH = '../../tools/cc/2.96-ee-001003-1/'
 
 __all__ = [ 'ElfWrapper' ]

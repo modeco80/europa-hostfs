@@ -43,10 +43,8 @@ EXTRATARGETS_POST = \
 # All files that make up the mkpatch tool.
 # Used to make sure that we rebuild if the Python code is changed.
 MKPATCH_DEPS := \
-	$(TOP)/tools/mkpatch.py \
-	$(TOP)/tools/utils/elf.py \
-	$(TOP)/tools/utils/ldparse.py \
-	$(TOP)/tools/utils/mips.py
+	mkpatch/main.py \
+	mkpatch/patches.py \
 
 include $(TOP)/mk/makedef.mk
 
@@ -57,5 +55,5 @@ $(OBJDIR)/blob.ld: $(OBJDIR)/ blob.ld.in
 
 $(TOP)/europa_$(GAME)_$(REGION)_hostfs_patch.xdelta: bin/$(NAME).elf $(MKPATCH_DEPS)
 	$(info Making patched ELF $@)
-	$(TOP)/tools/mkpatch.py $(REGION) $(GAME)
+	mkpatch/main.py $(REGION) $(GAME)
 

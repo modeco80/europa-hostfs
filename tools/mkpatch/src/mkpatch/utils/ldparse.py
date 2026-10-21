@@ -8,7 +8,7 @@ __all__ = [ 'LdScript' ]
 
 # Hilariously simple .ld script parser. Only handles comments, and
 # symbol (X = 0xY;) declarations. Does not support variables or
-# complicated expressions.
+# expressions currently.
 class LdScript:
 	_symbolMap: dict[str, int]
 
