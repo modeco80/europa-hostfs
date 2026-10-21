@@ -22,15 +22,15 @@ SOURCES := \
 
 LINKSCRIPT = $(OBJDIR)/blob.ld
 LINKLIBS := \
-	../utils/obj/libutils.a \
-	../ml/lib/core/obj/libml3_core.a \
-	../ml/lib/cxx/obj/libml3_cxx.a \
-	../ml/lib/hw/obj/libml3_hw.a \
+	$(PATCHSDK)/src/utils/obj/libutils.a \
+	$(PATCHSDK)/src/ml/lib/core/obj/libml3_core.a \
+	$(PATCHSDK)/src/ml/lib/cxx/obj/libml3_cxx.a \
+	$(PATCHSDK)/src/ml/lib/hw/obj/libml3_hw.a \
 
 # User C/CXX flags.
 USER_CFLAGS = -DREGION_$(REGION) -DGAME_$(GAME) \
-	-I $(TOP)/src/europa_api/include \
-	-I $(TOP)/src/utils/include
+	-I $(TOP)/europa_api/include \
+	-I $(PATCHSDK)/src/utils/include
 USER_CXXFLAGS := \
 	-Wno-pmf-conversions
 
@@ -46,7 +46,7 @@ MKPATCH_DEPS := \
 	mkpatch/main.py \
 	mkpatch/patches.py \
 
-include $(TOP)/mk/makedef.mk
+include $(PATCHSDK)/mk/makedef.mk
 
 # Preprocess the linker script to include game symbols here.
 $(OBJDIR)/blob.ld: $(OBJDIR)/ blob.ld.in
@@ -55,5 +55,5 @@ $(OBJDIR)/blob.ld: $(OBJDIR)/ blob.ld.in
 
 $(TOP)/europa_$(GAME)_$(REGION)_hostfs_patch.xdelta: bin/$(NAME).elf $(MKPATCH_DEPS)
 	$(info Making patched ELF $@)
-	mkpatch/main.py $(REGION) $(GAME)
+	mkpatch/main.py $(REGION) $(GAME) $@
 

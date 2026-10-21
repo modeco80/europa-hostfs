@@ -11,7 +11,7 @@ pyxdelta = "*"
 # This library package is internal and installed
 # TODO: This pipfile will be kept here, when mkpatch and most of the core stuff
 # is moved to a submodule, this path needs to be edited.
-mkpatch = { file = "tools/mkpatch", editable = true }
+mkpatch = { file = "patchsdk/tools/mkpatch", editable = true }
 
 [dev-packages]
 

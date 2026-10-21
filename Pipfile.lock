@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "161f81c5b18f21001712393907364bbcf9395b9d3a78a936c66e344bf216c112"
+            "sha256": "3931258c447d18f12b4319cd0761c950d6688d3a863118a0349a1786b1d32315"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -100,7 +100,7 @@
         },
         "mkpatch": {
             "editable": true,
-            "file": "tools/mkpatch"
+            "file": "patchsdk/tools/mkpatch"
         },
         "pyelftools": {
             "hashes": [
