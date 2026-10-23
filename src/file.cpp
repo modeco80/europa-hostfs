@@ -20,9 +20,6 @@ File::File(i32 fd)
 	readBufferPosition = 0;
 	readBufferStart = 0;
 	readBuffer = reinterpret_cast<u8*>(mlMalloc(FILEMAN_READ_BUFFER_SIZE));
-
-	// Do a initial fill of the buffer.
-	fillBuffer();
 }
 
 File::~File() {
